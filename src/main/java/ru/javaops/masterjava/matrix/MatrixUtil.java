@@ -40,15 +40,6 @@ public class MatrixUtil {
        return matrixC;
 
     }
-    public static void multiThreadMultiply(int[][] matrixA, int[][] matrixB, int[][] matrixC, int index) {
-
-        for (int j = 0; j < matrixB[0].length; j++) {
-            for (int k = 0; k < matrixA[0].length; k++) {
-                matrixC[index][j] += matrixA[index][k] * matrixB[k][j];
-            }
-        }
-    }
-
 
     // TODO optimize by https://habrahabr.ru/post/114797/
     public static int[][] singleThreadMultiply(int[][] matrixA, int[][] matrixB) {
@@ -70,8 +61,6 @@ public class MatrixUtil {
                 matrixC[i][j] = sum;
             }
         }
-//        System.out.println("single " + matrixC[0][0] + " last element " + matrixC[0][matrixSize-1]);
-//        System.out.println("single " + matrixC[matrixSize-1][0] + " last element " + matrixC[matrixSize-1][matrixSize-1]);
         return matrixC;
     }
 
