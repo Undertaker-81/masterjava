@@ -1,6 +1,6 @@
 package ru.javaops.masterjava.matrix;
 
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -16,41 +16,28 @@ public class MatrixUtil {
     public static int[][] concurrentMultiply(int[][] matrixA, int[][] matrixB, ExecutorService executor) throws InterruptedException, ExecutionException {
         final int matrixSize = matrixA.length;
          int[][] matrixC = new int[matrixSize][matrixSize];
-         int index = 0;
-
-         Future<Boolean> future1 = executor.submit(() -> {
-             for (int i = 0; i < matrixSize/2; i++) {
-                 for (int j = 0; j < matrixB[0].length; j++) {
-                     for (int k = 0; k < matrixA[0].length; k++) {
-                         matrixC[i][j] += matrixA[i][k] * matrixB[k][j];
-                     }
-                 }
-             }
-             return true;
-         }
-         );
-        Future<Boolean> future2 = executor.submit(() -> {
-
-                    for (int i = matrixSize/2; i < matrixSize; i++) {
-                        for (int j = 0; j < matrixB[0].length; j++) {
-                            for (int k = 0; k < matrixA[0].length; k++) {
-                                matrixC[i][j] += matrixA[i][k] * matrixB[k][j];
-                            }
-                        }
-                    }
-                    return true;
-                }
-        );
+        List<Future<Boolean>> futures = new LinkedList<>();
+        for(int m = 0; m < matrixSize ; m = m + 100){
+            int finalM = m;
+           futures.add(executor.submit(() -> {
+                       for (int i = finalM ; i < finalM + 100; i++) {
+                           for (int j = 0; j < matrixB[0].length; j++) {
+                               for (int k = 0; k < matrixA[0].length; k++) {
+                                   matrixC[i][j] += matrixA[i][k] * matrixB[k][j];
+                               }
+                           }
+                       }
+                       return true;
+                   }
+           )) ;
+        }
         while (true){
-            if (future1.isDone() && future2.isDone())
+            futures.removeIf(Future::isDone);
+            if (futures.isEmpty())
                 break;
         }
 
-      //  Thread.sleep(100);
-
-//        System.out.println("multi " + matrixC[0][0] + " last element " + matrixC[0][matrixSize-1]);
-//        System.out.println("multi " + matrixC[matrixSize-1][0] + " last element " + matrixC[matrixSize-1][matrixSize-1]);
-            return matrixC;
+       return matrixC;
 
     }
     public static void multiThreadMultiply(int[][] matrixA, int[][] matrixB, int[][] matrixC, int index) {
