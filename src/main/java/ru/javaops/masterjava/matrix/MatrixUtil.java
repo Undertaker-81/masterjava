@@ -1,10 +1,7 @@
 package ru.javaops.masterjava.matrix;
 
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * gkislin
@@ -14,29 +11,38 @@ public class MatrixUtil {
 
     // TODO implement parallel multiplication matrixA*matrixB
     public static int[][] concurrentMultiply(int[][] matrixA, int[][] matrixB, ExecutorService executor) throws InterruptedException, ExecutionException {
+        final ExecutorCompletionService<Boolean> completionService = new ExecutorCompletionService<>(executor);
         final int matrixSize = matrixA.length;
          int[][] matrixC = new int[matrixSize][matrixSize];
         List<Future<Boolean>> futures = new LinkedList<>();
+
         for(int m = 0; m < matrixSize ; m = m + 100){
+            int[] column = new int[matrixSize];
             int finalM = m;
-           futures.add(executor.submit(() -> {
-                       for (int i = finalM ; i < finalM + 100; i++) {
-                           for (int j = 0; j < matrixB[0].length; j++) {
-                               for (int k = 0; k < matrixA[0].length; k++) {
-                                   matrixC[i][j] += matrixA[i][k] * matrixB[k][j];
-                               }
-                           }
-                       }
-                       return true;
-                   }
-           )) ;
-        }
-        while (true){
-            futures.removeIf(Future::isDone);
-            if (futures.isEmpty())
-                break;
+            completionService.submit(() -> {
+                for (int j = 0; j < matrixSize; j++) {
+                    for (int k = 0; k < matrixSize; k++) {
+                        column[k] = matrixB[k][j];
+                    }
+
+                    for (int i = finalM ; i < finalM + 100; i++) {
+                        int[] row = matrixA[i];
+                        int sum = 0;
+                        for (int k = 0; k < matrixSize; k++) {
+                            sum += row[k] * column[k];
+                        }
+                        matrixC[i][j] = sum;
+                    }
+                }
+                        return true;
+                    }
+            ) ;
+
         }
 
+        for (int i=0; i < 10; i++){
+            final Future<Boolean> future = completionService.take();
+        }
        return matrixC;
 
     }
