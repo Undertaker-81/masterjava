@@ -21,6 +21,14 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+               <xs:element name="project">
+                   <xs:complexType>
+                       <xs:sequence maxOccurs="unbounded">
+                           <xs:element ref="project"/>
+                       </xs:sequence>
+                   </xs:complexType>
+               </xs:element>
+
             </xs:all>
         </xs:complexType>
     </xs:element>
@@ -28,11 +36,13 @@
     <xs:element name="User">
         <xs:complexType>
             <xs:sequence>
-                <xs:element type="xs:string" name="email"/>
+
                 <xs:element type="xs:string" name="fullName"/>
             </xs:sequence>
             <xs:attribute type="flagType" name="flag" use="required"/>
             <xs:attribute type="xs:IDREF" name="city" use="required"/>
+            <xs:attribute type="xs:string" name="email" use="required"/>
+
         </xs:complexType>
     </xs:element>
 
@@ -53,4 +63,37 @@
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
+
+    <xs:element name="project">
+        <xs:complexType>
+            <xs:sequence>
+               <xs:element type="projectType" name="name"/>
+               <xs:element type="xs:string" name="description"/>
+                <xs:group ref="projectGroup"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:group name="projectGroup">
+        <xs:all>
+            <xs:element name="nameGroup" type="xs:string"/>
+            <xs:element name="type" type="groupType"/>
+        </xs:all>
+
+    </xs:group>
+
+    <xs:simpleType name="projectType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TopJAVA"/>
+            <xs:enumeration value="MasterJava"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="groupType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="REGISTERING"/>
+            <xs:enumeration value="CURRENT"/>
+            <xs:enumeration value="FINISHED"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>
