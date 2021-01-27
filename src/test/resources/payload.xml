@@ -7,6 +7,11 @@
         </User>
         <User flag="superuser" city="spb" email="admin@javaops.ru">
             <fullName>Admin</fullName>
+            <Groups>
+                <group type="CURRENT">topjava01</group>
+            </Groups>
+
+
         </User>
         <User flag="deleted" city="spb" email="mail@yandex.ru">
             <fullName>Deleted</fullName>
@@ -17,12 +22,19 @@
         <City id="kiv">Киев</City>
         <City id="mnsk">Минск</City>
     </Cities>
-    <project>
-        <project>
-            <name>MasterJava</name>
+    <Projects>
+        <Project>
+            <name>TopJAVA</name>
             <description></description>
-            <nameGroup>masterjava03</nameGroup>
-            <type>CURRENT</type>
-        </project>
-    </project>
+            <Groups>
+                <group>topjava01</group>
+                <group>topjava02</group>
+                <group>topjava03</group>
+                <group>topjava04</group>
+                <group>topjava05</group>
+                <group>topjava06</group>
+                <group>topjava07</group>
+            </Groups>
+        </Project>
+    </Projects>
 </Payload>
