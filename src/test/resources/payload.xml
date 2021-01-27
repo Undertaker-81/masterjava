@@ -4,17 +4,59 @@
     <Users>
         <User flag="active" city="kiv" email="gmail@gmail.com">
             <fullName>Full Name</fullName>
+            <Groups>
+                <group>
+                    <name>topjava09</name>
+                    <type>CURRENT</type>
+                    <project>TopJAVA</project>
+                </group>
+                <group>
+                    <name>masterjava03</name>
+                    <type>REGISTERING</type>
+                    <project>MasterJava</project>
+                </group>
+            </Groups>
         </User>
         <User flag="superuser" city="spb" email="admin@javaops.ru">
             <fullName>Admin</fullName>
             <Groups>
-                <group type="CURRENT">topjava01</group>
+                <group >
+                    <name>topjava07</name>
+                    <type>FINISHED</type>
+                    <project>TopJAVA</project>
+                </group>
+                <group>
+                    <name>topjava08</name>
+                    <type>FINISHED</type>
+                    <project>TopJAVA</project>
+                </group>
+                <group>
+                    <name>masterjava01</name>
+                    <type>FINISHED</type>
+                    <project>MasterJava</project>
+                </group>
             </Groups>
-
 
         </User>
         <User flag="deleted" city="spb" email="mail@yandex.ru">
             <fullName>Deleted</fullName>
+            <Groups>
+                <group>
+                    <name>topjava01</name>
+                    <type>FINISHED</type>
+                    <project>TopJAVA</project>
+                </group>
+            </Groups>
+        </User>
+        <User flag="active" city="spb" email="user@mail.ru">
+            <fullName>User user</fullName>
+            <Groups>
+                <group>
+                    <name>topjava10</name>
+                    <type>REGISTERING</type>
+                    <project>TopJAVA</project>
+                </group>
+            </Groups>
         </User>
     </Users>
     <Cities>
@@ -25,16 +67,11 @@
     <Projects>
         <Project>
             <name>TopJAVA</name>
-            <description></description>
-            <Groups>
-                <group>topjava01</group>
-                <group>topjava02</group>
-                <group>topjava03</group>
-                <group>topjava04</group>
-                <group>topjava05</group>
-                <group>topjava06</group>
-                <group>topjava07</group>
-            </Groups>
+            <description>Стажировка «Enterprise Java-разработчик»</description>
+        </Project>
+        <Project>
+            <name>MasterJava</name>
+            <description>Многомодульный Maven, многопоточность, JavaEE ‐ MasterJava</description>
         </Project>
     </Projects>
 </Payload>
