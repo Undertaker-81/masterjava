@@ -245,6 +245,12 @@ public class User {
             return this.group;
         }
 
+        @Override
+        public String toString() {
+            return "Groups{" +
+                    "group=" + group +
+                    '}';
+        }
     }
 
     @Override

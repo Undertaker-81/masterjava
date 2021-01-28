@@ -17,7 +17,7 @@ public class MainXmlTest {
 
     @Test
      public void getUser() throws JAXBException, IOException {
-        MainXml mainXml = new MainXml(ProjectName.MASTER_JAVA);
+        MainXml mainXml = new MainXml(ProjectName.TOP_JAVA);
         List<User> users = mainXml.getUser();
         users.forEach(System.out::println);
     }

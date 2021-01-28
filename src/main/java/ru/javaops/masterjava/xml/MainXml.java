@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -43,7 +44,10 @@ public class MainXml {
         List<User> users = userElement.getUsers().getUser()
                                                             .stream()
                                                             .filter(user -> user.getGroups().getGroup().stream()
-                                                                    .anyMatch(group -> getProjectName().equals(projectName)))
+                                                                    .anyMatch(
+                                                                            group ->
+                                                                                    group.getProject().equals(projectName)) )
+                                                            .sorted(Comparator.comparing(User::getFullName))
                                                             .collect(Collectors.toList());
         return users;
     }
