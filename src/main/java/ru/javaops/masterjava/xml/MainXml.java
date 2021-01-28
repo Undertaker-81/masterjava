@@ -12,9 +12,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -57,22 +56,64 @@ public class MainXml {
     }
 
     public List<User> getUsersWithStax() throws XMLStreamException {
+        List<User> result = new ArrayList<>();
         try (StaxStreamProcessor processor =
                      new StaxStreamProcessor(inputStream)) {
             XMLStreamReader reader = processor.getReader();
+            StringBuilder sb = new StringBuilder();
             while (reader.hasNext()) {
                 int event = reader.next();
 
                 if (event == XMLEvent.START_ELEMENT) {
-                    System.out.println(reader.getName());
                     if ("User".equals(reader.getLocalName())) {
-
-                        System.out.println(reader.getAttributeLocalName(1));
+                        sb.append(reader.getAttributeLocalName(2)).append(":").append(reader.getAttributeValue(2)).append("|");
+                    }
+                    if ("fullName".equals(reader.getLocalName())){
+                        sb.append(reader.getElementText()).append("|");
+                    }
+                    if ("project".equals(reader.getLocalName())){
+                        sb.append(reader.getElementText()).append("|");
                     }
                 }
             }
+            String[] users = sb.toString().split("email:");
+
+            for (String user : users){
+                if (user.contains(projectName.value())){
+                    String[] info = user.split("\\|");
+                    User newUser = new User();
+                    newUser.setEmail(info[0]);
+                    newUser.setFullName(info[1]);
+                    result.add(newUser);
+                }
+            }
         }
-        return null;
+        return result.stream()
+                                .sorted(Comparator.comparing(User::getFullName))
+                                .collect(Collectors.toList());
     }
+
+    public void createHTML(List<User> users) throws FileNotFoundException, UnsupportedEncodingException {
+        PrintWriter writer = new PrintWriter("./src/test/java/ru/javaops/masterjava/xml/table.html", "UTF-8");
+        writer.println("<!DOCTYPE html>");
+        writer.println("<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Title</title>\n" +
+                "</head>\n" +
+                "<body>");
+        writer.println("<table>\n" +
+                "<tr><th>Full name</th><th>email</th></tr>");
+        for (User user : users){
+            writer.println("<tr><td>" + user.getFullName()+ "</td><td>"+ user.getEmail() + "</td></tr> ");
+
+        }
+
+        writer.println("</table>");
+        writer.println("</body>\n" +
+                "</html>");
+        writer.close();
+    }
+
 
 }

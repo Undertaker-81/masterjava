@@ -20,12 +20,19 @@ public class MainXmlTest {
      public void getUser() throws JAXBException, IOException {
         MainXml mainXml = new MainXml(ProjectName.TOP_JAVA);
         List<User> users = mainXml.getUsersWithJAXB();
-        users.forEach(System.out::println);
+
     }
 
     @Test
     public void getUsersWithStax() throws IOException, XMLStreamException {
-        MainXml mainXml = new MainXml(ProjectName.TOP_JAVA);
+        MainXml mainXml = new MainXml(ProjectName.MASTER_JAVA);
         List<User> users = mainXml.getUsersWithStax();
+        users.forEach(System.out::println);
+    }
+
+    @Test
+    public void createHtml() throws IOException, XMLStreamException {
+        MainXml mainXml = new MainXml(ProjectName.MASTER_JAVA);
+        mainXml.createHTML(mainXml.getUsersWithStax());
     }
 }
