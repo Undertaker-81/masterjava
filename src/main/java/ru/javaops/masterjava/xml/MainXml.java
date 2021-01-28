@@ -5,9 +5,13 @@ import ru.javaops.masterjava.xml.schema.*;
 import ru.javaops.masterjava.xml.util.JaxbMarshaller;
 import ru.javaops.masterjava.xml.util.JaxbParser;
 import ru.javaops.masterjava.xml.util.Schemas;
+import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.XMLEvent;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,13 +27,15 @@ import java.util.stream.Collectors;
 public class MainXml {
     private static final JaxbParser JAXB_PARSER = new JaxbParser(ObjectFactory.class);
 
+    private final InputStream inputStream = Resources.getResource("payload.xml").openStream();
+
     static {
         JAXB_PARSER.setSchema(Schemas.ofClasspath("payload.xsd"));
     }
 
     private final ProjectName projectName;
 
-    public MainXml(ProjectName project){
+    public MainXml(ProjectName project) throws IOException {
         this.projectName = project;
     }
 
@@ -37,9 +43,7 @@ public class MainXml {
         return projectName;
     }
 
-    public List<User> getUser() throws JAXBException, IOException {
-        InputStream inputStream = Resources.getResource("payload.xml").openStream();
-
+    public List<User> getUsersWithJAXB() throws JAXBException {
         Payload userElement = JAXB_PARSER.unmarshal(inputStream);
         List<User> users = userElement.getUsers().getUser()
                                                             .stream()
@@ -52,5 +56,23 @@ public class MainXml {
         return users;
     }
 
+    public List<User> getUsersWithStax() throws XMLStreamException {
+        try (StaxStreamProcessor processor =
+                     new StaxStreamProcessor(inputStream)) {
+            XMLStreamReader reader = processor.getReader();
+            while (reader.hasNext()) {
+                int event = reader.next();
+
+                if (event == XMLEvent.START_ELEMENT) {
+                    System.out.println(reader.getName());
+                    if ("User".equals(reader.getLocalName())) {
+
+                        System.out.println(reader.getAttributeLocalName(1));
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
 }

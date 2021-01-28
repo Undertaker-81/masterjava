@@ -6,6 +6,7 @@ import ru.javaops.masterjava.xml.schema.ProjectName;
 import ru.javaops.masterjava.xml.schema.User;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,7 +19,13 @@ public class MainXmlTest {
     @Test
      public void getUser() throws JAXBException, IOException {
         MainXml mainXml = new MainXml(ProjectName.TOP_JAVA);
-        List<User> users = mainXml.getUser();
+        List<User> users = mainXml.getUsersWithJAXB();
         users.forEach(System.out::println);
+    }
+
+    @Test
+    public void getUsersWithStax() throws IOException, XMLStreamException {
+        MainXml mainXml = new MainXml(ProjectName.TOP_JAVA);
+        List<User> users = mainXml.getUsersWithStax();
     }
 }
