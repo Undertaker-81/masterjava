@@ -17,8 +17,10 @@ import java.io.*;
  */
 public class JaxbParser {
 
-    protected JaxbMarshaller jaxbMarshaller;
-    protected JaxbUnmarshaller jaxbUnmarshaller;
+   // protected JaxbMarshaller jaxbMarshaller;
+   // protected JaxbUnmarshaller jaxbUnmarshaller;
+    private final ThreadLocal<JaxbMarshaller> jaxbMarshaller = new ThreadLocal<>();
+    private final ThreadLocal<JaxbUnmarshaller> jaxbUnmarshaller = new ThreadLocal<>();
     protected Schema schema;
 
     public JaxbParser(Class... classesToBeBound) {
@@ -38,49 +40,50 @@ public class JaxbParser {
         }
     }
 
-    private void init(JAXBContext ctx) throws JAXBException {
-        jaxbMarshaller = new JaxbMarshaller(ctx);
-        jaxbUnmarshaller = new JaxbUnmarshaller(ctx);
+    private synchronized void init(JAXBContext ctx) throws JAXBException {
+
+        jaxbMarshaller.set(new JaxbMarshaller(ctx));
+        jaxbUnmarshaller.set( new JaxbUnmarshaller(ctx));
     }
 
     // Unmarshaller
     public <T> T unmarshal(InputStream is) throws JAXBException {
-        return (T) jaxbUnmarshaller.unmarshal(is);
+        return (T) jaxbUnmarshaller.get().unmarshal(is);
     }
 
     public <T> T unmarshal(Reader reader) throws JAXBException {
-        return (T) jaxbUnmarshaller.unmarshal(reader);
+        return (T) jaxbUnmarshaller.get().unmarshal(reader);
     }
 
     public <T> T unmarshal(String str) throws JAXBException {
-        return (T) jaxbUnmarshaller.unmarshal(str);
+        return (T) jaxbUnmarshaller.get().unmarshal(str);
     }
 
     public <T> T unmarshal(XMLStreamReader reader, Class<T> elementClass) throws JAXBException {
-        return jaxbUnmarshaller.unmarshal(reader, elementClass);
+        return jaxbUnmarshaller.get().unmarshal(reader, elementClass);
     }
 
     // Marshaller
     public void setMarshallerProperty(String prop, Object value) {
         try {
-            jaxbMarshaller.setProperty(prop, value);
+            jaxbMarshaller.get().setProperty(prop, value);
         } catch (PropertyException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
     public String marshal(Object instance) throws JAXBException {
-        return jaxbMarshaller.marshal(instance);
+        return jaxbMarshaller.get().marshal(instance);
     }
 
     public void marshal(Object instance, Writer writer) throws JAXBException {
-        jaxbMarshaller.marshal(instance, writer);
+        jaxbMarshaller.get().marshal(instance, writer);
     }
 
     public void setSchema(Schema schema) {
         this.schema = schema;
-        jaxbUnmarshaller.setSchema(schema);
-        jaxbMarshaller.setSchema(schema);
+        jaxbUnmarshaller.get().setSchema(schema);
+        jaxbMarshaller.get().setSchema(schema);
     }
 
     public void validate(String str) throws IOException, SAXException {
