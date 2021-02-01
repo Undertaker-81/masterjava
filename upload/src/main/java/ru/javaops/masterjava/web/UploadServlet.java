@@ -36,12 +36,14 @@ import java.util.Set;
 @WebServlet("/upload")
 @MultipartConfig(location = "/tmp")
 public class UploadServlet extends HttpServlet {
+    private final Set<User> users = new HashSet<>();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
             TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(request.getServletContext());
             WebContext context = new WebContext(request, response, request.getServletContext());
-            //  context.setVariable("recipient", "World!");
+              context.setVariable("users", users);
 
             engine.process("upload.html", context, response.getWriter());
 
@@ -63,7 +65,7 @@ public class UploadServlet extends HttpServlet {
             ServletFileUpload upload = new ServletFileUpload(factory);
 
             // Parse the request
-            Set<User> users = new HashSet<>();
+
             try {
                 List<FileItem> items = upload.parseRequest(req);
                 for (FileItem file : items){

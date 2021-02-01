@@ -13,7 +13,9 @@
     <br/>
     <input type="submit" value="Press"> to upload the file!
 </form>
-
+<table>
+    <tr th:each="person : ${users}"><td th:text="${person.getValue()}"></td><td  th:text="${person.getEmail()}"></td> <td  th:text="${person.getFlag()}"></td></tr>
+</table>
 
 </body>
 </html>
