@@ -10,6 +10,7 @@ import org.thymeleaf.context.WebContext;
 import ru.javaops.masterjava.web.config.TemplateEngineUtil;
 import ru.javaops.masterjava.xml.schema.FlagType;
 import ru.javaops.masterjava.xml.schema.User;
+import ru.javaops.masterjava.xml.util.JaxbParser;
 import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 
 
@@ -20,6 +21,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
@@ -66,32 +68,31 @@ public class UploadServlet extends HttpServlet {
 
             // Parse the request
 
+            List<FileItem> items = null;
             try {
-                List<FileItem> items = upload.parseRequest(req);
+                items = upload.parseRequest(req);
                 for (FileItem file : items){
                     try (StaxStreamProcessor processor =
                                  new StaxStreamProcessor(file.getInputStream())) {
                         XMLStreamReader reader = processor.getReader();
-                        while (reader.hasNext()) {
-                            int event = reader.next();
-                            if (event == XMLEvent.START_ELEMENT) {
-                                if ("User".equals(reader.getLocalName())) {
-                                    User user = new User();
+                        JaxbParser parser = new JaxbParser(User.class);
 
-                                    user.setFlag(FlagType.fromValue(reader.getAttributeValue(0)));
-                                  //  String flag = reader.getAttributeValue(0);
-                                  user.setEmail(reader.getAttributeValue(2));
-                                  user.setValue(reader.getElementText());
-                                  users.add(user);
-                                }
+                        while (processor.doUntil(XMLEvent.START_ELEMENT, "User")) {
+                            if ("User".equals(reader.getLocalName())) {
+                                User user = parser.unmarshal(processor.getReader(), User.class);
+
+                                users.add(user);
                             }
                         }
+                    } catch (XMLStreamException | JAXBException e) {
+                        e.printStackTrace();
                     }
-
                 }
-            } catch (FileUploadException | XMLStreamException e) {
+            } catch (FileUploadException e) {
                 e.printStackTrace();
             }
+
+
 
             resp.sendRedirect("/upload");
 
