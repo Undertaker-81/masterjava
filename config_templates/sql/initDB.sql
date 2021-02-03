@@ -5,6 +5,7 @@ DROP TYPE IF EXISTS user_flag;
 CREATE TYPE user_flag AS ENUM ('active', 'deleted', 'superuser');
 
 CREATE SEQUENCE user_seq START 100000;
+ALTER SEQUENCE user_seq INCREMENT BY 1;
 
 
 CREATE TABLE users (

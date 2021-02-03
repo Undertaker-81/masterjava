@@ -1,6 +1,8 @@
 package ru.javaops.masterjava.upload;
 
 import org.thymeleaf.context.WebContext;
+import ru.javaops.masterjava.persist.DBIProvider;
+import ru.javaops.masterjava.persist.dao.UserDao;
 import ru.javaops.masterjava.persist.model.User;
 
 import javax.servlet.ServletException;
@@ -24,14 +26,19 @@ public class UploadServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         final WebContext webContext = new WebContext(req, resp, req.getServletContext(), req.getLocale());
+
         engine.process("upload", webContext, resp.getWriter());
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         final WebContext webContext = new WebContext(req, resp, req.getServletContext(), req.getLocale());
-        int count = Integer.getInteger(req.getParameter("count"));
+        UserDao dao = DBIProvider.getDao(UserDao.class);
+
+        int count = Integer.parseInt(req.getParameter("count"));
         try {
 //            http://docs.oracle.com/javaee/6/tutorial/doc/glraq.html
             Part filePart = req.getPart("fileToUpload");
@@ -40,6 +47,7 @@ public class UploadServlet extends HttpServlet {
             }
             try (InputStream is = filePart.getInputStream()) {
                 List<User> users = userProcessor.process(is);
+                dao.insertBatch(users.iterator(), count);
                 webContext.setVariable("users", users);
                 engine.process("result", webContext, resp.getWriter());
             }
