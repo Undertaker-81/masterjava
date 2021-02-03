@@ -7,6 +7,7 @@ import org.junit.Test;
 import ru.javaops.masterjava.persist.UserTestData;
 import ru.javaops.masterjava.persist.model.User;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static ru.javaops.masterjava.persist.UserTestData.FIST5_USERS;
@@ -31,5 +32,16 @@ public class UserDaoTest extends AbstractDaoTest<UserDao> {
     public void getWithLimit() {
         List<User> users = dao.getWithLimit(5);
         Assert.assertEquals(FIST5_USERS, users);
+    }
+    @Test
+    public void clean(){
+        dao.clean();
+    }
+
+    @Test
+    public void insertBatch(){
+        clean();
+      int[] ints =  dao.insertBatch(FIST5_USERS.iterator());
+        System.out.println(Arrays.toString(ints));
     }
 }
