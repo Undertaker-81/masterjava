@@ -21,11 +21,9 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 import static ru.javaops.masterjava.common.web.ThymeleafListener.engine;
 
@@ -48,7 +46,7 @@ public class UploadServlet extends HttpServlet {
 
         final WebContext webContext = new WebContext(req, resp, req.getServletContext(), req.getLocale());
         UserDao dao = DBIProvider.getDao(UserDao.class);
-
+        CopyOnWriteArrayList<User> conflictUser = new CopyOnWriteArrayList<>();
         int count = Integer.parseInt(req.getParameter("count"));
         try {
 //            http://docs.oracle.com/javaee/6/tutorial/doc/glraq.html
@@ -58,7 +56,7 @@ public class UploadServlet extends HttpServlet {
             }
             try (InputStream is = filePart.getInputStream()) {
                 final ExecutorService executor = Executors.newFixedThreadPool(4);
-                List<Callable<Void>> task = new ArrayList<>();
+                List<Callable<Void>> tasks = new ArrayList<>();
                 List<User> users = new ArrayList<>();
                 try (StaxStreamProcessor processor =
                              new StaxStreamProcessor(is)) {
@@ -75,9 +73,15 @@ public class UploadServlet extends HttpServlet {
                             users.add(user);
 
                             if (users.size() == count){
+                                List<User> temp = new ArrayList<>(users);
                                 executor.submit(() -> {
 
-                                    dao.insertBatch(ImmutableList.copyOf(users).iterator(), count);
+                                 int[] m =   dao.insertBatch(temp.iterator(), count);
+                                    for (int i = 0; i < m.length; i++){
+                                        if (m[i] == 0){
+                                            conflictUser.add(temp.get(i));
+                                        }
+                                    }
                                    return null;
                                 });
 
@@ -89,10 +93,20 @@ public class UploadServlet extends HttpServlet {
                 } catch (XMLStreamException e){
 
                 }
+                if (users.size() > 0) {
+                    executor.submit(() -> {
+                            int[] m =   dao.insertBatch(users.iterator(), users.size());
+                    });
+                }
 
 
                 executor.shutdown();
-              //  webContext.setVariable("users", conflictUsers);
+                try {
+                    executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                } catch (InterruptedException e) {
+
+                }
+                webContext.setVariable("users", conflictUser);
                 engine.process("result", webContext, resp.getWriter());
             }
         } catch (Exception e) {
