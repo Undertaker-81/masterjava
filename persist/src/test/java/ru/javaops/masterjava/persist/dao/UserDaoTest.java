@@ -40,7 +40,7 @@ public class UserDaoTest extends AbstractDaoTest<UserDao> {
 
     @Test
     public void insertBatch(){
-        clean();
+      //  clean();
       int[] ints =  dao.insertBatch(FIST5_USERS.iterator(), 3);
         System.out.println(Arrays.toString(ints));
     }
