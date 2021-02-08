@@ -56,7 +56,7 @@ public class UploadServlet extends HttpServlet {
             }
             try (InputStream is = filePart.getInputStream()) {
                 final ExecutorService executor = Executors.newFixedThreadPool(4);
-                List<Callable<Void>> tasks = new ArrayList<>();
+                List<Future<Void>> tasks = new ArrayList<>();
                 List<User> users = new ArrayList<>();
                 try (StaxStreamProcessor processor =
                              new StaxStreamProcessor(is)) {
@@ -76,7 +76,7 @@ public class UploadServlet extends HttpServlet {
                                 List<User> temp = new ArrayList<>(users);
                                 executor.submit(() -> {
 
-                                 int[] m =   dao.insertBatch(temp.iterator(), count);
+                                 int[] m = dao.insertBatch(temp.iterator(), count);
                                     for (int i = 0; i < m.length; i++){
                                         if (m[i] == 0){
                                             conflictUser.add(temp.get(i));
@@ -95,7 +95,12 @@ public class UploadServlet extends HttpServlet {
                 }
                 if (users.size() > 0) {
                     executor.submit(() -> {
-                            int[] m =   dao.insertBatch(users.iterator(), users.size());
+                        int[] m = dao.insertBatch(users.iterator(), users.size());
+                        for (int i = 0; i < m.length; i++){
+                            if (m[i] == 0){
+                                conflictUser.add(users.get(i));
+                            }
+                        }
                     });
                 }
 
