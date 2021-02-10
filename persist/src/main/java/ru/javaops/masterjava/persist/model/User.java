@@ -14,11 +14,11 @@ public class User extends BaseEntity {
     private @NonNull String fullName;
     private @NonNull String email;
     private @NonNull UserFlag flag;
-    private @NonNull Town town;
+    private @NonNull City city;
     private List<Group> groups;
 
-    public User(Integer id, String fullName, String email, UserFlag flag, Town town) {
-        this(fullName, email, flag, town);
+    public User(Integer id, String fullName, String email, UserFlag flag, City city) {
+        this(fullName, email, flag, city);
         this.id=id;
     }
 }

@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import ru.javaops.masterjava.persist.DBIProvider;
+import ru.javaops.masterjava.persist.dao.CityDao;
 import ru.javaops.masterjava.persist.dao.UserDao;
-import ru.javaops.masterjava.persist.model.Town;
+import ru.javaops.masterjava.persist.model.City;
 import ru.javaops.masterjava.persist.model.User;
 import ru.javaops.masterjava.persist.model.UserFlag;
-import ru.javaops.masterjava.xml.schema.CityType;
 import ru.javaops.masterjava.xml.schema.ObjectFactory;
-import ru.javaops.masterjava.xml.schema.Payload;
 import ru.javaops.masterjava.xml.util.JaxbParser;
 import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 
@@ -33,6 +32,7 @@ public class UserProcessor {
 
     private static final JaxbParser jaxbParser = new JaxbParser(ObjectFactory.class);
     private static UserDao userDao = DBIProvider.getDao(UserDao.class);
+    private static CityDao cityDao = DBIProvider.getDao(CityDao.class);
 
     private ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_THREADS);
 
@@ -59,12 +59,13 @@ public class UserProcessor {
         List<User> chunk = new ArrayList<>(chunkSize);
         val processor = new StaxStreamProcessor(is);
         val unmarshaller = jaxbParser.createUnmarshaller();
-        Map<String, String> sitiesMap = new LinkedHashMap<>();
+
         while (processor.startElement("City", "Cities")) {
             ru.javaops.masterjava.xml.schema.CityType xmlCities = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.CityType.class);
-           //TODO
-            sitiesMap.put(xmlCities.getValue(), xmlCities.getValue());
+           cityDao.insert(new City(xmlCities.getValue(), xmlCities.getId()));
+
         }
+        List<City> cityList = cityDao.getTowns();
         while (processor.doUntil(XMLEvent.START_ELEMENT, "User")) {
           //  ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
 
@@ -72,16 +73,19 @@ public class UserProcessor {
                 User user = new User();
 
                 user.setFlag(UserFlag.valueOf(processor.getReader().getAttributeValue(0)));
-                String sities = (processor.getReader().getAttributeValue(1));
-                if (sitiesMap.containsKey(sities)){
-                    user.setTown(new Town(sities, sitiesMap.get(sities)));
+                String shortNameCity = (processor.getReader().getAttributeValue(1));
+                for (City city : cityList){
+                    if (city.getShortName().equals(shortNameCity)){
+                        user.setCity(new City(city.getId(), city.getShortName(), city.getFullName()));
+                    }
                 }
+
                 user.setEmail(processor.getReader().getAttributeValue(2));
                 String refg = (processor.getReader().getAttributeValue(3));
                 user.setFullName(processor.getReader().getElementText());
 
 
-   //         final User user = new User(id++, xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()), (Town) xmlUser.getCity());
+   //         final User user = new User(id++, xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()), (City) xmlUser.getCity());
             chunk.add(user);
             if (chunk.size() == chunkSize) {
                 addChunkFutures(chunkFutures, chunk);
@@ -119,4 +123,5 @@ public class UserProcessor {
         chunkFutures.put(emailRange, future);
         log.info("Submit chunk: " + emailRange);
     }
+
 }

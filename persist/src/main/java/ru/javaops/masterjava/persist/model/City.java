@@ -11,13 +11,13 @@ import lombok.*;
 @Data
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Town extends BaseEntity{
+public class City extends BaseEntity{
     @Column("full_name")
     private @NonNull String fullName;
     @Column("short_name")
     private @NonNull String shortName;
 
-    public Town(Integer id, String fullName, String shortName){
+    public City(Integer id, String fullName, String shortName){
         this(fullName,shortName);
         this.id = id;
     }

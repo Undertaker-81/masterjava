@@ -23,6 +23,7 @@ CREATE TABLE towns (
                        full_name TEXT NOT NULL,
                        short_name TEXT NOT NULL
 );
+CREATE UNIQUE INDEX short_name_idx ON towns (short_name);
 
 CREATE TABLE users (
   id        INTEGER PRIMARY KEY DEFAULT nextval('user_seq'),
