@@ -8,7 +8,9 @@ import ru.javaops.masterjava.persist.dao.UserDao;
 import ru.javaops.masterjava.persist.model.Town;
 import ru.javaops.masterjava.persist.model.User;
 import ru.javaops.masterjava.persist.model.UserFlag;
+import ru.javaops.masterjava.xml.schema.CityType;
 import ru.javaops.masterjava.xml.schema.ObjectFactory;
+import ru.javaops.masterjava.xml.schema.Payload;
 import ru.javaops.masterjava.xml.util.JaxbParser;
 import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 
@@ -57,16 +59,35 @@ public class UserProcessor {
         List<User> chunk = new ArrayList<>(chunkSize);
         val processor = new StaxStreamProcessor(is);
         val unmarshaller = jaxbParser.createUnmarshaller();
-        ru.javaops.masterjava.xml.schema.CityType xmlCity = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.CityType.class);
+        Map<String, String> sitiesMap = new LinkedHashMap<>();
+        while (processor.startElement("City", "Cities")) {
+            ru.javaops.masterjava.xml.schema.CityType xmlCities = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.CityType.class);
+           //TODO
+            sitiesMap.put(xmlCities.getValue(), xmlCities.getValue());
+        }
         while (processor.doUntil(XMLEvent.START_ELEMENT, "User")) {
-            ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
+          //  ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
 
-            final User user = new User(id++, xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()), (Town) xmlUser.getCity());
+            if ("User".equals(processor.getReader().getLocalName())) {
+                User user = new User();
+
+                user.setFlag(UserFlag.valueOf(processor.getReader().getAttributeValue(0)));
+                String sities = (processor.getReader().getAttributeValue(1));
+                if (sitiesMap.containsKey(sities)){
+                    user.setTown(new Town(sities, sitiesMap.get(sities)));
+                }
+                user.setEmail(processor.getReader().getAttributeValue(2));
+                String refg = (processor.getReader().getAttributeValue(3));
+                user.setFullName(processor.getReader().getElementText());
+
+
+   //         final User user = new User(id++, xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()), (Town) xmlUser.getCity());
             chunk.add(user);
             if (chunk.size() == chunkSize) {
                 addChunkFutures(chunkFutures, chunk);
                 chunk = new ArrayList<>(chunkSize);
                 id = userDao.getSeqAndSkip(chunkSize);
+            }
             }
         }
 
