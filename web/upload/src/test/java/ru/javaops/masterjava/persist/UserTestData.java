@@ -18,18 +18,18 @@ public class UserTestData {
     public static List<User> FIST5_USERS;
 
     public static void init() {
-        ADMIN = new User("Admin", "admin@javaops.ru", UserFlag.superuser, new City());
-        DELETED = new User("Deleted", "deleted@yandex.ru", UserFlag.deleted, new City());
-        FULL_NAME = new User("Full Name", "gmail@gmail.com", UserFlag.active, new City());
-        USER1 = new User("User1", "user1@gmail.com", UserFlag.active, new City());
-        USER2 = new User("User2", "user2@yandex.ru", UserFlag.active, new City());
-        USER3 = new User("User3", "user3@yandex.ru", UserFlag.active, new City());
+        ADMIN = new User("Admin", "admin@javaops.ru", UserFlag.superuser, new City(1, "Питер", "spb"));
+        DELETED = new User("Deleted", "deleted@yandex.ru", UserFlag.deleted, new City(1, "Питер", "spb"));
+        FULL_NAME = new User("Full Name", "gmail@gmail.com", UserFlag.active, new City(1, "Питер", "spb"));
+        USER1 = new User("User1", "user1@gmail.com", UserFlag.active, new City(1, "Питер", "spb"));
+        USER2 = new User("User2", "user2@yandex.ru", UserFlag.active, new City(1, "Питер", "spb"));
+        USER3 = new User("User3", "user3@yandex.ru", UserFlag.active, new City(1, "Питер", "spb"));
         FIST5_USERS = ImmutableList.of(ADMIN, DELETED, FULL_NAME, USER1, USER2);
     }
 
     public static void setUp() {
         UserDao dao = DBIProvider.getDao(UserDao.class);
-        dao.clean();
+     //   dao.clean();
         DBIProvider.getDBI().useTransaction((conn, status) -> {
             FIST5_USERS.forEach(dao::insert);
             dao.insert(USER3);

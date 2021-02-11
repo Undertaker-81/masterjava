@@ -71,9 +71,11 @@ public class UserProcessor {
 
             if ("User".equals(processor.getReader().getLocalName())) {
                 User user = new User();
+                //todo
 
                 user.setFlag(UserFlag.valueOf(processor.getReader().getAttributeValue(0)));
                 String shortNameCity = (processor.getReader().getAttributeValue(1));
+                //todo
                 for (City city : cityList){
                     if (city.getShortName().equals(shortNameCity)){
                         user.setCity(new City(city.getId(), city.getShortName(), city.getFullName()));

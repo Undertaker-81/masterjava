@@ -36,7 +36,7 @@ public abstract class CityDao implements AbstractDao{
     public abstract List<City> getTowns();
 
     //   http://stackoverflow.com/questions/13223820/postgresql-delete-all-content
-    @SqlUpdate("TRUNCATE towns")
+    @SqlUpdate("TRUNCATE towns CASCADE")
     @Override
     public abstract void clean();
 

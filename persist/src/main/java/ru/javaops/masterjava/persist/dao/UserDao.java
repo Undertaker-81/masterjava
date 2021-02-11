@@ -33,23 +33,25 @@ public abstract class UserDao implements AbstractDao {
         return id;
     }
 
-    @SqlUpdate("INSERT INTO users (full_name, email, flag) VALUES (:fullName, :email, CAST(:flag AS USER_FLAG)) ")
+    @SqlUpdate("INSERT INTO users (full_name, email, flag, town_id) VALUES (:fullName, :email, CAST(:flag AS USER_FLAG), :cityId) ")
     @GetGeneratedKeys
     abstract int insertGeneratedId(@BindBean User user);
 
-    @SqlUpdate("INSERT INTO users (id, full_name, email, flag) VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG)) ")
+
+
+    @SqlUpdate("INSERT INTO users (id, full_name, email, flag, town_id) VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG), :cityId) ")
     abstract void insertWitId(@BindBean User user);
 
     @SqlQuery("SELECT * FROM users ORDER BY full_name, email LIMIT :it")
     public abstract List<User> getWithLimit(@Bind int limit);
 
     //   http://stackoverflow.com/questions/13223820/postgresql-delete-all-content
-    @SqlUpdate("TRUNCATE users")
+    @SqlUpdate("TRUNCATE users CASCADE")
     @Override
     public abstract void clean();
 
     //    https://habrahabr.ru/post/264281/
-    @SqlBatch("INSERT INTO users (id, full_name, email, flag, town_id) VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG), :city)" +
+    @SqlBatch("INSERT INTO users (id, full_name, email, flag, town_id) VALUES (:id, :fullName, :email, CAST(:flag AS USER_FLAG), :cityId)" +
             "ON CONFLICT DO NOTHING")
 //            "ON CONFLICT (email) DO UPDATE SET full_name=:fullName, flag=CAST(:flag AS USER_FLAG)")
     public abstract int[] insertBatch(@BindBean List<User> users, @BatchChunkSize int chunkSize);
@@ -61,5 +63,9 @@ public abstract class UserDao implements AbstractDao {
                 .filter(i -> result[i] == 0)
                 .mapToObj(index -> users.get(index).getEmail())
                 .toList();
+    }
+    public int insertGeneratedId2(User user){
+      return   DBIProvider.getDBI().withHandle(handle -> handle.update("INSERT INTO users (full_name, email, flag, town_id) VALUES (?, ?, CAST(? AS USER_FLAG), ? )"
+                ,user.getFullName(), user.getEmail(), user.getFlag(), user.getCity().getId() ));
     }
 }

@@ -21,4 +21,7 @@ public class User extends BaseEntity {
         this(fullName, email, flag, city);
         this.id=id;
     }
+    public int getCityId(){
+        return city.id;
+    }
 }

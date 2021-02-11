@@ -18,7 +18,8 @@ public class City extends BaseEntity{
     private @NonNull String shortName;
 
     public City(Integer id, String fullName, String shortName){
-        this(fullName,shortName);
+        this.fullName = fullName;
+        this.shortName = shortName;
         this.id = id;
     }
 }
