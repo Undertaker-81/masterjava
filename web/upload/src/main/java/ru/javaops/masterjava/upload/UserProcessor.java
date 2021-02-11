@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class UserProcessor {
@@ -65,24 +66,18 @@ public class UserProcessor {
            cityDao.insert(new City(xmlCities.getValue(), xmlCities.getId()));
 
         }
-        List<City> cityList = cityDao.getTowns();
+        Map<String,City> cityMap = cityDao.getTowns().stream().collect(Collectors.toMap(City::getShortName, city -> city));;
         while (processor.doUntil(XMLEvent.START_ELEMENT, "User")) {
           //  ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
 
             if ("User".equals(processor.getReader().getLocalName())) {
                 User user = new User();
-                //todo
-
+                user.setId(id++);
                 user.setFlag(UserFlag.valueOf(processor.getReader().getAttributeValue(0)));
                 String shortNameCity = (processor.getReader().getAttributeValue(1));
-                //todo
-                for (City city : cityList){
-                    if (city.getShortName().equals(shortNameCity)){
-                        user.setCity(new City(city.getId(), city.getShortName(), city.getFullName()));
-                    }
-                }
-
-                user.setEmail(processor.getReader().getAttributeValue(2));
+                user.setCity(cityMap.get(shortNameCity));
+                 user.setEmail(processor.getReader().getAttributeValue(2));
+                 //todo
                 String refg = (processor.getReader().getAttributeValue(3));
                 user.setFullName(processor.getReader().getElementText());
 
