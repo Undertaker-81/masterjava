@@ -23,6 +23,7 @@ public class ProjectDaoTest extends AbstractDaoTest<ProjectDao>{
     @Test
     public void insert() {
         dao.insert(ProjectTestData.MASTERJAVA);
+        dao.insert(ProjectTestData.TOPJAVA);
     }
 
     @Test
