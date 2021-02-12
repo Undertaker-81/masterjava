@@ -3,6 +3,9 @@ package ru.javaops.masterjava.persist.dao;
 import org.junit.Before;
 import org.junit.Test;
 import ru.javaops.masterjava.persist.GroupTestData;
+import ru.javaops.masterjava.persist.model.Group;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -37,7 +40,9 @@ public class GroupDaoTest extends AbstractDaoTest<GroupDao>{
     }
 
     @Test
-    public void getProjects() {
+    public void getGroups() {
+       List<Group> list = dao.getGroups();
+        System.out.println(list);
     }
 
     @Test

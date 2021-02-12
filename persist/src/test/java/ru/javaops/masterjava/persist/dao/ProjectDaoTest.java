@@ -3,6 +3,9 @@ package ru.javaops.masterjava.persist.dao;
 import org.junit.Before;
 import org.junit.Test;
 import ru.javaops.masterjava.persist.ProjectTestData;
+import ru.javaops.masterjava.persist.model.Project;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -28,6 +31,8 @@ public class ProjectDaoTest extends AbstractDaoTest<ProjectDao>{
 
     @Test
     public void getProjects() {
+      List<Project> list = dao.getProjects();
+        System.out.println(list);
     }
 
     @Test

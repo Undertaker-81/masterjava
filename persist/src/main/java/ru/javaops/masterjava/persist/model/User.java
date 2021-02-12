@@ -14,7 +14,7 @@ public class User extends BaseEntity {
     private @NonNull String fullName;
     private @NonNull String email;
     private @NonNull UserFlag flag;
-    private @NonNull City city;
+    private @NonNull  City city;
     private List<Group> groups;
 
     public User(Integer id, String fullName, String email, UserFlag flag, City city) {

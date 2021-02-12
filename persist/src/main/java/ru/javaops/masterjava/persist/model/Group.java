@@ -1,7 +1,9 @@
 package ru.javaops.masterjava.persist.model;
 
 import com.bertoncelj.jdbi.entitymapper.Column;
+import com.bertoncelj.jdbi.entitymapper.EntityMapperFactory;
 import lombok.*;
+import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapperFactory;
 
 import java.util.List;
 
@@ -16,7 +18,7 @@ import java.util.List;
 public class Group extends BaseEntity{
     private @NonNull String name;
     private @NonNull StatusGroup status;
-    @Column("project_id")
+  //  @Column("project_id")
     private @NonNull Project project;
 
 

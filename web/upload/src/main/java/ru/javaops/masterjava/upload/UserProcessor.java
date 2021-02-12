@@ -74,7 +74,8 @@ public class UserProcessor {
                 User user = new User();
                 user.setId(id++);
                 user.setFlag(UserFlag.valueOf(processor.getReader().getAttributeValue(0)));
-                String shortNameCity = (processor.getReader().getAttributeValue(1));
+                String shortNameCity = processor.getReader().getAttributeValue(1);
+
                 user.setCity(cityMap.get(shortNameCity));
                  user.setEmail(processor.getReader().getAttributeValue(2));
                  //todo
