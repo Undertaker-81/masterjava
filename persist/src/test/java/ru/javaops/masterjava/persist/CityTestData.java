@@ -1,6 +1,8 @@
 package ru.javaops.masterjava.persist;
 
 import com.google.common.collect.ImmutableList;
+import org.jdbi.v3.core.Handle;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import ru.javaops.masterjava.persist.dao.CityDao;
 import ru.javaops.masterjava.persist.dao.UserDao;
 import ru.javaops.masterjava.persist.model.City;
@@ -31,12 +33,16 @@ public class CityTestData {
         CITIES = ImmutableList.of(spb,mov,kiv,mnsk);
     }
     public static void setUp() {
+
         CityDao dao = DBIProvider.getDao(CityDao.class);
+
         dao.clean();
-        DBIProvider.getDBI().useTransaction((conn, status) -> {
+        DBIProvider.getDBI().useTransaction((handle) -> {
             CITIES.forEach(dao::insert);
 
         });
+
+
         CITIES_WITH_ID = dao.getTowns();
     }
 }

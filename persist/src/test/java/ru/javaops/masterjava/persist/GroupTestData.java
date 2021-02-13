@@ -37,7 +37,7 @@ public class GroupTestData {
     public static void setUp() {
         GroupDao dao = DBIProvider.getDao(GroupDao.class);
         dao.clean();
-        DBIProvider.getDBI().useTransaction((conn, status) -> {
+        DBIProvider.getDBI().useTransaction((handle) -> {
             GROUPS.forEach(dao::insert);
 
         });

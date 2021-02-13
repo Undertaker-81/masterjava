@@ -3,7 +3,7 @@ package ru.javaops.masterjava.persist.model;
 import com.bertoncelj.jdbi.entitymapper.Column;
 import com.bertoncelj.jdbi.entitymapper.EntityMapperFactory;
 import lombok.*;
-import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapperFactory;
+
 
 import java.util.List;
 

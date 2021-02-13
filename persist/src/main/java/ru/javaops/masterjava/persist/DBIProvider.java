@@ -1,9 +1,9 @@
 package ru.javaops.masterjava.persist;
 
 import lombok.extern.slf4j.Slf4j;
-import org.skife.jdbi.v2.DBI;
-import org.skife.jdbi.v2.logging.SLF4JLog;
-import org.skife.jdbi.v2.tweak.ConnectionFactory;
+import org.jdbi.v3.core.ConnectionFactory;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.SqlLogger;
 import ru.javaops.masterjava.persist.dao.AbstractDao;
 
 import javax.naming.InitialContext;
@@ -15,24 +15,24 @@ public class DBIProvider {
     private volatile static ConnectionFactory connectionFactory = null;
 
     private static class DBIHolder {
-        static final DBI jDBI;
+        static final Jdbi jDBI;
 
         static {
-            final DBI dbi;
+            final Jdbi dbi;
             if (connectionFactory != null) {
                 log.info("Init jDBI with  connectionFactory");
-                dbi = new DBI(connectionFactory);
+                dbi = Jdbi.create(connectionFactory);
             } else {
                 try {
                     log.info("Init jDBI with  JNDI");
                     InitialContext ctx = new InitialContext();
-                    dbi = new DBI((DataSource) ctx.lookup("java:/comp/env/jdbc/masterjava"));
+                    dbi = Jdbi.create((DataSource) ctx.lookup("java:/comp/env/jdbc/masterjava"));
                 } catch (Exception ex) {
                     throw new IllegalStateException("PostgreSQL initialization failed", ex);
                 }
             }
             jDBI = dbi;
-            jDBI.setSQLLog(new SLF4JLog());
+            jDBI.setSqlLogger(SqlLogger.NOP_SQL_LOGGER);
         }
     }
 
@@ -40,11 +40,12 @@ public class DBIProvider {
         DBIProvider.connectionFactory = connectionFactory;
     }
 
-    public static DBI getDBI() {
+    public static Jdbi getDBI() {
         return DBIHolder.jDBI;
     }
 
     public static <T extends AbstractDao> T getDao(Class<T> daoClass) {
+        DBIHolder.jDBI.installPlugins();
         return DBIHolder.jDBI.onDemand(daoClass);
     }
 }

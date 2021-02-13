@@ -2,6 +2,7 @@ package ru.javaops.masterjava.persist.model;
 
 import com.bertoncelj.jdbi.entitymapper.Column;
 import lombok.*;
+import org.jdbi.v3.core.mapper.reflect.ColumnName;
 
 /**
  * @author Panfilov Dmitriy
@@ -12,9 +13,9 @@ import lombok.*;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class City extends BaseEntity{
-    @Column("full_name")
+    @ColumnName("full_name")
     private @NonNull String fullName;
-    @Column("short_name")
+    @ColumnName("short_name")
     private @NonNull String shortName;
 
     public City(Integer id, String fullName, String shortName){

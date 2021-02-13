@@ -1,14 +1,17 @@
 package ru.javaops.masterjava.persist.dao;
 
+import org.jdbi.v3.core.mapper.JoinRow;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.javaops.masterjava.persist.CityTestData;
 import ru.javaops.masterjava.persist.UserTestData;
+import ru.javaops.masterjava.persist.model.City;
 import ru.javaops.masterjava.persist.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 import static ru.javaops.masterjava.persist.UserTestData.FIST5_USERS;
 
@@ -46,5 +49,11 @@ public class UserDaoTest extends AbstractDaoTest<UserDao> {
         int seq1 = dao.getSeqAndSkip(5);
         int seq2 = dao.getSeqAndSkip(1);
         Assert.assertEquals(5, seq2 - seq1);
+    }
+
+    @Test
+    public void getUsers() {
+      List<User> list =  dao.getUsers();
+       Assert.assertEquals(FIST5_USERS, list);
     }
 }

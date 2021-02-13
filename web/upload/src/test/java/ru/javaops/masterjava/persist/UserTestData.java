@@ -28,9 +28,10 @@ public class UserTestData {
     }
 
     public static void setUp() {
-        UserDao dao = DBIProvider.getDao(UserDao.class);
+        UserDao dao = DBIProvider.getDBI().onDemand(UserDao.class);
+      //  UserDao dao = DBIProvider.getDao(UserDao.class);
      //   dao.clean();
-        DBIProvider.getDBI().useTransaction((conn, status) -> {
+        DBIProvider.getDBI().useTransaction(handle -> {
             FIST5_USERS.forEach(dao::insert);
             dao.insert(USER3);
         });

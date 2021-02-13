@@ -4,10 +4,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.javaops.masterjava.persist.CityTestData;
-import ru.javaops.masterjava.persist.UserTestData;
+import ru.javaops.masterjava.persist.DBIProvider;
 import ru.javaops.masterjava.persist.model.City;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -16,6 +17,7 @@ import static org.junit.Assert.*;
  * 11.02.2021
  */
 public class CityDaoTest extends AbstractDaoTest<CityDao>{
+
 
     public CityDaoTest() {
         super(CityDao.class);
@@ -34,6 +36,11 @@ public class CityDaoTest extends AbstractDaoTest<CityDao>{
 
     @Test
     public void insertGeneratedId() {
+      //  dao.clean();
+       int ii = dao.getId(CityTestData.kiv.getShortName());
+        Integer id =
+                dao.insertGeneratedId(CityTestData.kiv);
+        System.out.println(id);
     }
 
     @Test
@@ -42,8 +49,11 @@ public class CityDaoTest extends AbstractDaoTest<CityDao>{
 
     @Test
     public void getTowns() {
+
+      CityDao dao = DBIProvider.getDao(CityDao.class);
         List<City> cityList = dao.getTowns();
-        assertEquals(CityTestData.CITIES, cityList);
+       assertEquals(CityTestData.CITIES, cityList);
+
     }
 
     @Test

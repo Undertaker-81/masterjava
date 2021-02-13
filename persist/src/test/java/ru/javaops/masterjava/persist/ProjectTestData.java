@@ -19,7 +19,7 @@ public class ProjectTestData {
     public static void setUp() {
         ProjectDao dao = DBIProvider.getDao(ProjectDao.class);
         dao.clean();
-        DBIProvider.getDBI().useTransaction((conn, status) -> {
+        DBIProvider.getDBI().useTransaction((handle) -> {
 
             dao.insert(MASTERJAVA);
             dao.insert(TOPJAVA);
