@@ -17,5 +17,5 @@ public interface MailService {
             @WebParam(name = "to") List<Addressee> to,
             @WebParam(name = "cc") List<Addressee> cc,
             @WebParam(name = "subject") String subject,
-            @WebParam(name = "body") String body);
+            @WebParam(name = "body") String body) ;
 }
