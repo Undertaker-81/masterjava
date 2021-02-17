@@ -6,8 +6,6 @@ import org.skife.jdbi.v2.sqlobject.customizers.BatchChunkSize;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapperFactory;
 import ru.javaops.masterjava.persist.DBIProvider;
 import ru.javaops.masterjava.persist.dao.AbstractDao;
-import ru.javaops.masterjava.persist.model.User;
-import ru.javaops.masterjava.service.mail.MailServiceExecutor;
 import ru.javaops.masterjava.service.mail.model.SendResult;
 
 import java.util.List;

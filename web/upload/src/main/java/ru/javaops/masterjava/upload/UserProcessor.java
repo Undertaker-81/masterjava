@@ -1,5 +1,6 @@
 package ru.javaops.masterjava.upload;
 
+import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import ru.javaops.masterjava.persist.DBIProvider;
@@ -23,6 +24,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import static com.google.common.base.Strings.nullToEmpty;
 
 @Slf4j
 public class UserProcessor {
@@ -48,7 +51,10 @@ public class UserProcessor {
 
         while (processor.doUntil(XMLEvent.START_ELEMENT, "User")) {
             String cityRef = processor.getAttribute("city");  // unmarshal doesn't get city ref
+            String groupRef = processor.getAttribute("groupRefs"); // unmarshal doesn't get groups ref
+            List<String> groups = Splitter.on(' ').splitToList(nullToEmpty(groupRef));
             ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
+
             if (cities.get(cityRef) == null) {
                 failed.add(new FailedEmails(xmlUser.getEmail(), "City '" + cityRef + "' is not present in DB"));
             } else {
