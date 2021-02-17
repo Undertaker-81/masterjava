@@ -53,8 +53,7 @@ public abstract class MailResultDao implements AbstractDao {
     public abstract List<SendResult> getWithLimit(@Bind int limit);
 
     //    https://habrahabr.ru/post/264281/
-    @SqlBatch("INSERT INTO mailsender (id, date, address, is_send) VALUES (:id, :id, :dateTime, :address, :result)" +
-            "ON CONFLICT DO NOTHING")
+    @SqlBatch("INSERT INTO mailsender (date, address, is_send) VALUES (:dateTime, :address, :result)" )
     public abstract int[] insertBatch(@BindBean List<SendResult> sendResults, @BatchChunkSize int chunkSize);
 
 }

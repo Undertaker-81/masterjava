@@ -37,6 +37,6 @@ CREATE TABLE user_group (
 CREATE TABLE mailsender (
      id         INTEGER PRIMARY KEY DEFAULT nextval('common_seq'),
      date       TIMESTAMP  DEFAULT now() NOT NULL ,
-     address    TEXT UNIQUE NOT NULL,
+     address    TEXT  NOT NULL,
      is_send    BOOLEAN
 );

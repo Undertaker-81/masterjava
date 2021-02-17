@@ -18,4 +18,9 @@ public class SendResult extends BaseEntity {
     private LocalDateTime dateTime;
     private String address;
     private boolean result;
+
+    public SendResult(String address, boolean result){
+        this.address = address;
+        this.result = result;
+    }
 }
