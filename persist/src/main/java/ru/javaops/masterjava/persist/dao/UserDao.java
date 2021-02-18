@@ -43,6 +43,9 @@ public abstract class UserDao implements AbstractDao {
     @SqlQuery("SELECT * FROM users ORDER BY full_name, email LIMIT :it")
     public abstract List<User> getWithLimit(@Bind int limit);
 
+    @SqlQuery("SELECT * FROM users ORDER BY full_name, email")
+    public abstract List<User> getAll();
+
     //   http://stackoverflow.com/questions/13223820/postgresql-delete-all-content
     @SqlUpdate("TRUNCATE users CASCADE")
     @Override

@@ -15,6 +15,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Panfilov Dmitriy
@@ -36,10 +37,17 @@ public class ProjectProcessor {
             }
 
         }
+        Map<String, ru.javaops.masterjava.persist.model.Project> map = projectDao.getAsMap();
         projects.forEach(proj -> {
-            int projectId = projectDao.insertGeneratedId(new ru.javaops.masterjava.persist.model.Project(proj.getName(), proj.getDescription()));
-            proj.getGroup()
-                        .forEach(group -> groupDao.insert(new Group(group.getName(), GroupType.valueOf(group.getType().value()), projectId)));
+           if (!map.containsKey(proj.getName())){
+               int projectId = projectDao.insertGeneratedId(new ru.javaops.masterjava.persist.model.Project(proj.getName(), proj.getDescription()));
+               proj.getGroup()
+                       .forEach(group -> groupDao.insert(new Group(group.getName(), GroupType.valueOf(group.getType().value()), projectId)));
+           }else{
+               proj.getGroup()
+                       .forEach(group -> groupDao.insert(new Group(group.getName(), GroupType.valueOf(group.getType().value()), map.get(proj.getName()).getId())));
+           }
+
         });
 
 
