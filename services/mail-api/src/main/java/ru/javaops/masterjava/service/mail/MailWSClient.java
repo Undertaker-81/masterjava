@@ -12,7 +12,7 @@ public class MailWSClient {
     private static final WsClient<MailService> WS_CLIENT;
 
     static {
-        WS_CLIENT = new WsClient<>(Resources.getResource("/apps/masterjava/config/mailService.wsdl"),
+        WS_CLIENT = new WsClient<>(Resources.getResource("/apps/masterjava/config/wsdl/mailService.wsdl"),
                 new QName("http://mail.javaops.ru/", "MailServiceImplService"),
                 MailService.class);
 
