@@ -2,12 +2,17 @@ package ru.javaops.masterjava.service.mail;
 
 import lombok.*;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "email")
 public class Addressee {
+    @XmlAttribute(name = "email")
     private @NonNull String email;
+    @XmlValue
     private String name;
 
     public Addressee(String email) {
