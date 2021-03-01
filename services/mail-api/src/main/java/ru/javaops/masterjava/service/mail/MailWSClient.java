@@ -8,7 +8,7 @@ import javax.xml.namespace.QName;
 import java.util.Set;
 
 @Slf4j
-public class MailWSClient {
+public class MailWSClient  {
     private static final WsClient<MailService> WS_CLIENT;
 
     static {

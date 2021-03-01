@@ -6,6 +6,8 @@ import org.thymeleaf.context.WebContext;
 import ru.javaops.masterjava.persist.DBIProvider;
 import ru.javaops.masterjava.persist.dao.UserDao;
 import ru.javaops.masterjava.persist.model.User;
+import ru.javaops.masterjava.service.mail.Addressee;
+import ru.javaops.masterjava.service.mail.MailWSClient;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,8 +15,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.javaops.masterjava.common.web.ThymeleafListener.engine;
 
@@ -38,6 +40,15 @@ public class SendMailServlet extends HttpServlet {
         String subject = req.getParameter("subject");
         String body = req.getParameter("body");
         List<String> list = Arrays.asList(req.getParameterValues("checkbox"));
+        Map<String, User> users = userDao.getWithLimit(20)
+                            .stream()
+                            .collect(Collectors.toMap(user -> user.getId().toString(), user -> user));
+        Set<Addressee> addressees = list
+                                    .stream()
+                                    .map(users::get)
+                                    .map(user -> new Addressee(user.getEmail(), user.getFullName()))
+                                    .collect(Collectors.toSet());
 
+        MailWSClient.sendToGroup(addressees, null, subject, body);
     }
 }

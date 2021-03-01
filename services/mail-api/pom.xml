@@ -14,6 +14,16 @@
     <artifactId>mail-api</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Mail API</name>
+    <build>
+        <resources>
+            <resource>
+                <directory>${masterjava.config}</directory>
+                <includes>
+                    <include>wsdl/mailService.wsdl</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
     <dependencies>
         <dependency>
