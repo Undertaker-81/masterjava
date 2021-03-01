@@ -1,0 +1,47 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+<form action="" method="post">
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>#</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Flag</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--/*@thymesVar id="users" type="java.util.List<ru.javaops.masterjava.persist.model.User>"*/-->
+        <tr th:each="user,iter: ${users}">
+            <td>
+                <input type="checkbox" name="checkbox" th:value="${user.id}"/>
+            </td>
+            <td th:text="${iter.count}"></td>
+            <td th:text="${user.fullName}"></td>
+            <td th:utext="${user.email}"></td>
+            <td th:text="${user.flag}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <p>
+        subject
+        <input type="text" name="subject" value="subject">
+    </p>
+   <p>
+       body
+       <input type="text" name="body" value="body">
+   </p>
+
+    <p>
+        <input type="submit" value="Send mail" name="submit">
+    </p>
+</form>
+
+
+</body>
+</html>
