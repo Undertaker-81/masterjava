@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import ru.javaops.masterjava.ExceptionType;
 import ru.javaops.masterjava.persist.DBIProvider;
@@ -11,6 +12,7 @@ import ru.javaops.masterjava.service.mail.persist.MailCase;
 import ru.javaops.masterjava.service.mail.persist.MailCaseDao;
 import ru.javaops.web.WebStateException;
 
+import java.io.File;
 import java.util.Set;
 
 @Slf4j
@@ -27,6 +29,14 @@ public class MailSender {
         String state = MailResult.OK;
         try {
             val email = MailConfig.createHtmlEmail();
+            //Create the attachment
+//            EmailAttachment attachment = new EmailAttachment();
+//            attachment.setPath("mypictures/john.jpg");
+//            attachment.setDisposition(EmailAttachment.ATTACHMENT);
+//            attachment.setDescription("Picture of John");
+//            attachment.setName("John");
+            //mail
+            email.attach(new File(""));
             email.setSubject(subject);
             email.setHtmlMsg(body);
             for (Addressee addressee : to) {
