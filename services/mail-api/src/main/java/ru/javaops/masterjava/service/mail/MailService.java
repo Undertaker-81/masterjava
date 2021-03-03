@@ -5,7 +5,10 @@ import ru.javaops.web.WebStateException;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.xml.ws.soap.MTOM;
+import java.io.File;
 import java.util.Set;
+
 
 @WebService(targetNamespace = "http://mail.javaops.ru/")
 //@SOAPBinding(
@@ -26,5 +29,8 @@ public interface MailService {
             @WebParam(name = "to") Set<Addressee> to,
             @WebParam(name = "subject") String subject,
             @WebParam(name = "body") String body) throws WebStateException;
+
+    @WebMethod
+    File upload(@WebParam String name) throws WebStateException;
 
 }

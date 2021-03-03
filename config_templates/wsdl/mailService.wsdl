@@ -7,6 +7,9 @@
              xmlns="http://schemas.xmlsoap.org/wsdl/"
              targetNamespace="http://mail.javaops.ru/"
              name="MailServiceImplService">
+    <wsp:Policy wsu:Id="MailServiceImplPortBinding_MTOM_Policy">
+        <ns1:OptimizedMimeSerialization wsp:Optional="true"/>
+    </wsp:Policy>
     <types>
         <xs:schema targetNamespace="http://mail.javaops.ru/">
             <xs:import namespace="http://common.javaops.ru/" schemaLocation="common.xsd"/>
@@ -15,7 +18,18 @@
             <xs:element name="sendToGroupResponse" type="tns:sendToGroupResponse"/>
             <xs:element name="sendBulk" type="tns:sendBulk"/>
             <xs:element name="sendBulkResponse" type="tns:sendBulkResponse"/>
-
+            <xs:element name="upload" type="tns:upload"/>
+            <xs:element name="uploadResponse" type="tns:uploadResponse"/>
+            <xs:complexType name="upload">
+                <xs:sequence>
+                    <xs:element name="filename" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="uploadResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="sendToGroup">
                 <xs:sequence>
                     <xs:element name="to" type="tns:addressee" minOccurs="0" maxOccurs="unbounded"/>
@@ -85,6 +99,12 @@
     <message name="WebStateException">
         <part name="fault" element="common:webStateException"/>
     </message>
+    <message name="upload">
+        <part name="parameters" element="tns:upload"/>
+    </message>
+    <message name="uploadResponse">
+        <part name="parameters" element="tns:uploadResponse"/>
+    </message>
 
     <portType name="MailService">
         <operation name="sendToGroup">
@@ -102,6 +122,11 @@
             <fault wsam:Action="http://mail.javaops.ru/MailService/sendBulkMail/Fault/WebStateException"
                    message="tns:WebStateException" name="WebStateException" />
         </operation>
+        <operation name="upload">
+            <input wsam:Action="http://mail.javaops.ru/MailService/uploadRequest" message="tns:upload"/>
+            <output wsam:Action="http://mail.javaops.ru/MailService/uploadResponse" message="tns:uploadResponse"/>
+            <fault message="tns:WebStateException" name="WebStateException" wsam:Action="http://mail.javaops.ru/MailService/upload/Fault/WebStateException"/>
+        </operation>
     </portType>
     <binding name="MailServiceImplPortBinding" type="tns:MailService">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
@@ -118,6 +143,18 @@
             </fault>
         </operation>
         <operation name="sendBulk">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="WebStateException">
+                <soap:fault name="WebStateException" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="upload">
             <soap:operation soapAction=""/>
             <input>
                 <soap:body use="literal"/>
