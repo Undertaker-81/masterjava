@@ -5,6 +5,7 @@ import ru.javaops.web.WebStateException;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -17,13 +18,20 @@ public class MailServiceClient {
 
         MailService mailService = service.getPort(MailService.class);
 
-        String state = mailService.sendToGroup(ImmutableSet.of(new Addressee("masterjava@javaops.ru", null)), null,
-                "Group mail subject", "Group mail body");
+
+
+
+        String state = mailService.sendToGroup(ImmutableSet.of(new Addressee("undertaker-81@mail.ru", null)), null,
+                "Group mail subject", "Group mail body", "/home/dmitry/pgadmin.log");
         System.out.println("Group mail state: " + state);
 
         GroupResult groupResult = mailService.sendBulk(ImmutableSet.of(
-                new Addressee("Мастер Java <masterjava@javaops.ru>"),
-                new Addressee("Bad Email <bad_email.ru>")), "Bulk mail subject", "Bulk mail body");
+                new Addressee("Мастер Java <undertaker-81@mail.ru>"),
+                new Addressee("Bad Email <bad_email.ru>")), "Bulk mail subject", "Bulk mail body", null);
         System.out.println("\nBulk mail groupResult:\n" + groupResult);
+
+
     }
+
+
 }

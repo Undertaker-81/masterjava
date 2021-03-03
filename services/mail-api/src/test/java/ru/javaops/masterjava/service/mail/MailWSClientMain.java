@@ -8,8 +8,8 @@ import ru.javaops.web.WebStateException;
 public class MailWSClientMain {
     public static void main(String[] args) throws WebStateException {
         String state = MailWSClient.sendToGroup(
-                ImmutableSet.of(new Addressee("To <masterjava@javaops.ru>")),
-                ImmutableSet.of(new Addressee("Copy <masterjava@javaops.ru>")), "Subject", "Body");
+                ImmutableSet.of(new Addressee("To <undertaker-81@mail.ru>")),
+                ImmutableSet.of(new Addressee("Copy <undertaker-81@mail.ru>")), "Subject", "Body", "/home/dmitry/pgadmin.log");
         System.out.println(state);
     }
 }

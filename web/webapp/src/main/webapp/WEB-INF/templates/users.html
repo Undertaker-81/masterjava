@@ -40,6 +40,10 @@
         <textarea id="body" placeholder="mail body" cols=75 rows=5></textarea><br/>
     </p>
     <p>
+        <input type="file" name="fileToUpload" id="fileToUpload"><br/>
+    </p>
+
+    <p>
         <button type="button" onclick="send()">Send</button>
     </p>
     <pre id="result"></pre>
@@ -51,7 +55,7 @@
             return this.value;
         }).get();
 //        https://stackoverflow.com/a/22213543/548473
-        $.post("send", "users=" + users + "&subject=" + $("#subject").val() + "&body=" + $("#body").val())
+        $.post("send", "users=" + users + "&subject=" + $("#subject").val() + "&body=" + $("#body").val() + "&file=" + $("#fileToUpload").val())
             .done(function (result) {
                 $('#result').html(result);
             })

@@ -22,15 +22,16 @@ public interface MailService {
             @WebParam(name = "to") Set<Addressee> to,
             @WebParam(name = "cc") Set<Addressee> cc,
             @WebParam(name = "subject") String subject,
-            @WebParam(name = "body") String body) throws WebStateException;
+            @WebParam(name = "body") String body,
+            @WebParam(name = "attach") String filename) throws WebStateException;
 
     @WebMethod
     GroupResult sendBulk(
             @WebParam(name = "to") Set<Addressee> to,
             @WebParam(name = "subject") String subject,
-            @WebParam(name = "body") String body) throws WebStateException;
+            @WebParam(name = "body") String body,
+            @WebParam(name = "attach") String filename) throws WebStateException;
 
-    @WebMethod
-    File upload(@WebParam String name) throws WebStateException;
+
 
 }
