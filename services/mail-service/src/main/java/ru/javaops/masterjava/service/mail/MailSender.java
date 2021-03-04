@@ -17,7 +17,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Set;
 
-import static com.sun.xml.internal.messaging.saaj.packaging.mime.internet.MimeUtility.encodeWord;
+import static com.sun.xml.messaging.saaj.packaging.mime.internet.MimeUtility.encodeWord;
+
 
 @Slf4j
 public class MailSender {

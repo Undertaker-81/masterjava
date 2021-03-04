@@ -25,7 +25,7 @@ public class MailServiceClient {
                 new URL("http://localhost:8080/mail/mailService?wsdl"),
                 new QName("http://mail.javaops.ru/", "MailServiceImplService"));
 
-        MailService mailService = service.getPort(MailService.class,new MTOMFeature(true,40000));
+        MailService mailService = service.getPort(MailService.class,new MTOMFeature(40000));
 //        BindingProvider bindingProvider = (BindingProvider) mailService;
 //        SOAPBinding sopadBinding = (SOAPBinding) bindingProvider.getBinding();
 //        sopadBinding.setMTOMEnabled(true);
@@ -33,14 +33,14 @@ public class MailServiceClient {
 
 
 
-        String state = mailService.sendToGroup(ImmutableSet.of(new Addressee("undertaker-81@mail.ru", null)), null,
+        String state = mailService.sendToGroup(ImmutableSet.of(new Addressee("undertaker-81@mail.ru", "null")), null,
                 "Group mail subject", "Group mail body",ImmutableList.of(new Attachment("pgadmin.log", new DataHandler(new File("/home/dmitry/pgadmin.log").toURI().toURL()))) );
         System.out.println("Group mail state: " + state);
 
-        GroupResult groupResult = mailService.sendBulk(ImmutableSet.of(
-                new Addressee("Мастер Java <undertaker-81@mail.ru>"),
-                new Addressee("Bad Email <bad_email.ru>")), "Bulk mail subject", "Bulk mail body", null);
-        System.out.println("\nBulk mail groupResult:\n" + groupResult);
+//        GroupResult groupResult = mailService.sendBulk(ImmutableSet.of(
+//                new Addressee("Мастер Java <undertaker-81@mail.ru>"),
+//                new Addressee("Bad Email <bad_email.ru>")), "Bulk mail subject", "Bulk mail body", null);
+//        System.out.println("\nBulk mail groupResult:\n" + groupResult);
 
     }
 
