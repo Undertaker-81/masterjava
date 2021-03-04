@@ -1,18 +1,10 @@
 package ru.javaops.masterjava.service.mail;
 
 
-
-
-import com.sun.xml.ws.developer.StreamingAttachment;
 import ru.javaops.web.WebStateException;
-
-import javax.activation.DataHandler;
-import javax.jws.Oneway;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
-import javax.xml.bind.annotation.XmlMimeType;
-import javax.xml.ws.soap.MTOM;
 import java.util.List;
 import java.util.Set;
 
