@@ -25,13 +25,13 @@ public class SendServlet extends HttpServlet {
             String subject = req.getParameter("subject");
             String body = req.getParameter("body");
             String attach = req.getParameter("file");
-            GroupResult groupResult = MailWSClient.sendBulk(MailWSClient.split(users), subject, body, attach);
-            result = groupResult.toString();
-            log.info("Processing finished with result: {}", result);
+        //    GroupResult groupResult = MailWSClient.sendBulk(MailWSClient.split(users), subject, body, attach);
+       //     result = groupResult.toString();
+        //    log.info("Processing finished with result: {}", result);
         } catch (Exception e) {
             log.error("Processing failed", e);
             result = e.toString();
         }
-        resp.getWriter().write(result);
+      //  resp.getWriter().write(result);
     }
 }

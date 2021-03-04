@@ -1,6 +1,8 @@
 package ru.javaops.masterjava.service.mail;
 
 import com.google.common.collect.ImmutableSet;
+
+import com.sun.xml.ws.developer.JAXWSProperties;
 import ru.javaops.web.WebStateException;
 
 import javax.activation.DataHandler;
@@ -13,6 +15,7 @@ import javax.xml.ws.soap.SOAPBinding;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 public class MailServiceClient {
 
@@ -21,14 +24,15 @@ public class MailServiceClient {
                 new URL("http://localhost:8080/mail/mailService?wsdl"),
                 new QName("http://mail.javaops.ru/", "MailServiceImplService"));
 
-        MailService mailService = service.getPort(MailService.class,new MTOMFeature(true,0));
-        BindingProvider bindingProvider = (BindingProvider) mailService;
-        SOAPBinding sopadBinding = (SOAPBinding) bindingProvider.getBinding();
-        sopadBinding.setMTOMEnabled(true);
-
+        MailService mailService = service.getPort(MailService.class,new MTOMFeature(true,40000));
+//        BindingProvider bindingProvider = (BindingProvider) mailService;
+//        SOAPBinding sopadBinding = (SOAPBinding) bindingProvider.getBinding();
+//        sopadBinding.setMTOMEnabled(true);
+        Map<String, Object> ctxt=((BindingProvider)mailService).getRequestContext();
+        ctxt.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
         DataHandler dh = new DataHandler(new
-                FileDataSource("c:\\collector.log"));
-        mailService.upload("collector.log",dh);
+                FileDataSource("/home/dmitry/pgadmin.log"));
+        mailService.upload("/tmp/pgadmin1.log",dh);
 
 
 /*
