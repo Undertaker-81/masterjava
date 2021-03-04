@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import ru.javaops.web.WebStateException;
 import ru.javaops.web.WsClient;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.xml.namespace.QName;
 import java.util.Set;
 
@@ -36,6 +38,12 @@ public class MailWSClient {
         GroupResult result = WS_CLIENT.getPort().sendBulk(to, subject, body, filename);
         log.info("Sent bulk with result: " + result);
         return result;
+    }
+
+    public static void upload(final String filename, final DataHandler data){
+        log.info("file: " + filename);
+        WS_CLIENT.getPort().upload(filename, data);
+
     }
 
     public static Set<Addressee> split(String addressees) {

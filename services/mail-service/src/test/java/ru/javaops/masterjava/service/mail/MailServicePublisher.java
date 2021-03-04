@@ -20,6 +20,7 @@ public class MailServicePublisher {
                 new StreamSource(Configs.getConfigFile("wsdl/common.xsd")));
 
         endpoint.setMetadata(metadata);
+
         endpoint.publish("http://localhost:8080/mail/mailService");
     }
 }

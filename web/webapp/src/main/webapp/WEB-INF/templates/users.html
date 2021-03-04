@@ -55,7 +55,7 @@
             return this.value;
         }).get();
 //        https://stackoverflow.com/a/22213543/548473
-        $.post("send", "users=" + users + "&subject=" + $("#subject").val() + "&body=" + $("#body").val() + "&file=" + $("#fileToUpload").val())
+        $.post("send", "users=" + users + "&subject=" + $("#subject").val() + "&body=" + $("#body").val() + "&file=" + $("#fileToUpload").val().split('\\').pop())
             .done(function (result) {
                 $('#result').html(result);
             })
