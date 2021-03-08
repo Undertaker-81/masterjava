@@ -5,8 +5,10 @@ import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
 import com.sun.xml.ws.api.handler.MessageHandlerContext;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
+import com.typesafe.config.Config;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
+import ru.javaops.masterjava.config.Configs;
 
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
@@ -28,6 +30,9 @@ import java.util.Map;
 public abstract class SoapLoggingHandlers extends SoapBaseHandler {
 
     private final Level loggingLevel;
+
+    private static final Config config =
+            Configs.getConfig("hosts.conf", "hosts");
 
     protected SoapLoggingHandlers(Level loggingLevel) {
         this.loggingLevel = loggingLevel;
@@ -132,7 +137,8 @@ public abstract class SoapLoggingHandlers extends SoapBaseHandler {
     public static class ServerHandler extends SoapLoggingHandlers {
 
         public ServerHandler() {
-            super(Level.INFO);
+
+            super(Level.valueOf(config.getConfig("mail").getString("debug.server")));
         }
 
         @Override
