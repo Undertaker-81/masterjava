@@ -31,9 +31,10 @@ public class JmsMailListener implements ServletContextListener {
                     while (!Thread.interrupted()) {
                         Message m = receiver.receive();
                         // TODO implement mail sending
-                        if (m instanceof TextMessage) {
-                            TextMessage tm = (TextMessage) m;
-                            String text = tm.getText();
+
+                        if (m instanceof ObjectMessage) {
+                            ObjectMessage objectMessage = (ObjectMessage) m;
+                            String text = (String) objectMessage.getObjectProperty("subject");
                             log.info("Received TextMessage with text '{}'", text);
                         }
                     }

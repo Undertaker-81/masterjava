@@ -65,9 +65,11 @@ public class JmsSendServlet extends HttpServlet {
     }
 
     private synchronized String sendJms(String users, String subject, String body) throws JMSException {
-        TextMessage testMessage = session.createTextMessage();
-        testMessage.setText(subject);
-        producer.send(testMessage);
+        ObjectMessage objectMessage = session.createObjectMessage();
+        objectMessage.setObjectProperty("subject",subject);
+        objectMessage.setObjectProperty("body",body);
+        objectMessage.setObjectProperty("users",users);
+        producer.send(objectMessage);
         return "Successfully sent JMS message";
     }
 }

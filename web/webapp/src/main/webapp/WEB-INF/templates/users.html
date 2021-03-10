@@ -86,10 +86,19 @@
                 processData: false
             };
         } else if (transport === "REST" || transport === "JMS") {
+            var data = new FormData();
+            data.append('users', users);
+            data.append('subject', $("#subject").val());
+            data.append('body', $("#body").val());
+            var attach = $('#attach')[0].files[0];
+            if (attach) data.append('attach', attach);
             param = {
                 url: (transport === "REST" ? "/mail/rest/send" : "sendJms"),
-                data: "users=" + users + "&subject=" + $("#subject").val() + "&body=" + $("#body").val(),
-                contentType: "application/x-www-form-urlencoded"
+                data: data,
+                contentType : false,
+                processData : false
+              //  data: "users=" + users + "&subject=" + $("#subject").val() + "&body=" + $("#body").val(),
+               // contentType: "application/x-www-form-urlencoded"
             };
         }
 
