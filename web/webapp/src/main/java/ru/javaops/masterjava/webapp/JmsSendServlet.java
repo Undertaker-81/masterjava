@@ -12,9 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.IllegalStateException;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/sendJms")
 @Slf4j
@@ -59,8 +62,8 @@ public class JmsSendServlet extends HttpServlet {
             String users = req.getParameter("users");
             String subject = req.getParameter("subject");
             String body = req.getParameter("body");
-         //   Part filePart = req.getPart("attach");
-            result = sendJms(users, subject, body);
+            Part filePart = req.getPart("attach");
+            result = sendJms(users, subject, body, filePart);
             log.info("Processing finished with result: {}", result);
         } catch (Exception e) {
             log.error("Processing failed", e);
@@ -69,13 +72,25 @@ public class JmsSendServlet extends HttpServlet {
         resp.getWriter().write(result);
     }
 
-    private synchronized String sendJms(String users, String subject, String body) throws JMSException {
+    private synchronized String sendJms(String users, String subject, String body, Part attach) throws JMSException, IOException {
         ObjectMessage objectMessage = session.createObjectMessage();
+       // BytesMessage bytesMessage = session.createBytesMessage();
         objectMessage.setObjectProperty("subject",subject);
-        objectMessage.setObjectProperty("body",body);
-        objectMessage.setObjectProperty("users",users);
-   //     objectMessage.setObjectProperty("attach",inputStream);
+        objectMessage.setObjectProperty("body", body);
+        objectMessage.setObjectProperty("users", users);
+        objectMessage.setObjectProperty("filename", attach.getSubmittedFileName());
+        //можно передать только примитивы, строки, листы, мапы из них, фигня конечно, но работает, потом найду "правильный" вариант
+        int b ;
+        List<Byte> bytes = new ArrayList<>();
+        InputStream inputStream = attach.getInputStream();
+        while (inputStream.available() > 0){
+            bytes.add((byte) inputStream.read());
+        }
+        objectMessage.setObjectProperty("attach", bytes);
+
+   //     bytesMessage.setObjectProperty("attach", attach.getInputStream());
         producer.send(objectMessage);
+
         return "Successfully sent JMS message";
     }
 }
