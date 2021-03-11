@@ -2,6 +2,7 @@ package ru.javaops.masterjava.service.mail.listeners;
 
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
+import ru.javaops.masterjava.service.mail.MailServiceExecutor;
 import ru.javaops.masterjava.service.mail.MailWSClient;
 import ru.javaops.masterjava.service.mail.util.Attachments;
 
@@ -52,7 +53,7 @@ public class JmsMailListener implements ServletContextListener {
                                 b[i] = bytes.get(i);
                             }
                             InputStream inputStream = new ByteArrayInputStream(b);
-                            MailWSClient.sendBulk(MailWSClient.split(users), subject, body, ImmutableList.of(Attachments.getAttachment(filename, inputStream )));
+                            MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body, ImmutableList.of(Attachments.getAttachment(filename, inputStream )));
                             log.info("Received TextMessage with text '{}'", body);
                         }
                     }
