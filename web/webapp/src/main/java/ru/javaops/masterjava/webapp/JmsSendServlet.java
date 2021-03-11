@@ -6,15 +6,19 @@ import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.IllegalStateException;
 
 @WebServlet("/sendJms")
 @Slf4j
+@MultipartConfig
 public class JmsSendServlet extends HttpServlet {
     private Connection connection;
     private Session session;
@@ -55,6 +59,7 @@ public class JmsSendServlet extends HttpServlet {
             String users = req.getParameter("users");
             String subject = req.getParameter("subject");
             String body = req.getParameter("body");
+         //   Part filePart = req.getPart("attach");
             result = sendJms(users, subject, body);
             log.info("Processing finished with result: {}", result);
         } catch (Exception e) {
@@ -69,6 +74,7 @@ public class JmsSendServlet extends HttpServlet {
         objectMessage.setObjectProperty("subject",subject);
         objectMessage.setObjectProperty("body",body);
         objectMessage.setObjectProperty("users",users);
+   //     objectMessage.setObjectProperty("attach",inputStream);
         producer.send(objectMessage);
         return "Successfully sent JMS message";
     }

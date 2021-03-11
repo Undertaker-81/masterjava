@@ -1,12 +1,14 @@
 package ru.javaops.masterjava.service.mail.listeners;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.javaops.masterjava.service.mail.MailWSClient;
 
 import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import java.util.Collections;
 
 @WebListener
 @Slf4j
@@ -34,14 +36,18 @@ public class JmsMailListener implements ServletContextListener {
 
                         if (m instanceof ObjectMessage) {
                             ObjectMessage objectMessage = (ObjectMessage) m;
-                            String text = (String) objectMessage.getObjectProperty("subject");
-                            log.info("Received TextMessage with text '{}'", text);
+                            String subject = (String) objectMessage.getObjectProperty("subject");
+                            String body = (String) objectMessage.getObjectProperty("body");
+                            String users = (String) objectMessage.getObjectProperty("users");
+                            MailWSClient.sendBulk(MailWSClient.split(users), subject, body, Collections.emptyList());
+                            log.info("Received TextMessage with text '{}'", body);
                         }
                     }
                 } catch (Exception e) {
                     log.error("Receiving messages failed: " + e.getMessage(), e);
                 }
             });
+            listenerThread.setName("JMS Listener Thread");
             listenerThread.start();
         } catch (Exception e) {
             log.error("JMS failed: " + e.getMessage(), e);
