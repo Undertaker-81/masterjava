@@ -38,6 +38,6 @@ public class MailRS {
 
 
         return MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body,
-                ImmutableList.of(Attachments.getAttachment(fileMetaData.getFileName(), uploadedInputStream)));
+                fileMetaData == null ? Collections.emptyList() : ImmutableList.of(Attachments.getAttachment(fileMetaData.getFileName(), uploadedInputStream)));
     }
 }

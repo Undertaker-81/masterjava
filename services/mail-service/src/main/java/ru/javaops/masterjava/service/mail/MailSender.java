@@ -4,13 +4,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.io.IOUtils;
 import ru.javaops.masterjava.ExceptionType;
 import ru.javaops.masterjava.persist.DBIProvider;
 import ru.javaops.masterjava.service.mail.persist.MailCase;
 import ru.javaops.masterjava.service.mail.persist.MailCaseDao;
 import ru.javaops.masterjava.web.WebStateException;
 
-import javax.mail.internet.MimeUtility;
+import javax.mail.Multipart;
+import javax.mail.internet.*;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -38,14 +40,30 @@ public class MailSender {
             for (Addressee addressee : cc) {
                 email.addCc(addressee.getEmail(), addressee.getName());
             }
+           // email.buildMimeMessage();
+            MimeMessage mimeMessage = new MimeMessage(email.getMailSession());
             for (Attachment attach : attachments) {
-                email.attach(attach.getDataHandler().getDataSource(), encodeWord(attach.getName()), null);
+                InternetHeaders fileHeaders = new InternetHeaders();
+                fileHeaders.setHeader("Content-Transfer-Encoding", "8bit");
+                fileHeaders.setHeader("Content-Type", attach.getDataHandler().getContentType() + "; " + attach.getDataHandler().getName());
+                Multipart multipart = new MimeMultipart();
+                byte[] fileByteArray = IOUtils.toByteArray(attach.getDataHandler().getInputStream());
+//and convert to Base64
+                byte[] fileBase64ByteArray = java.util.Base64.getEncoder().encode(fileByteArray);
+                MimeBodyPart bodyPart = new MimeBodyPart(fileHeaders, fileBase64ByteArray);
+                bodyPart.setFileName(attach.getDataHandler().getName());
+                multipart.addBodyPart(bodyPart);
+                mimeMessage.setContent( multipart);
+
+
+              //  email.attach(attach.getDataHandler().getDataSource(), encodeWord(attach.getName()), null);
             }
 
             //  https://yandex.ru/blog/company/66296
             email.setHeaders(ImmutableMap.of("List-Unsubscribe", "<mailto:masterjava@javaops.ru?subject=Unsubscribe&body=Unsubscribe>"));
-
-            email.send();
+            email.buildMimeMessage();
+            email.sendMimeMessage();
+           // email.send();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             state = e.getMessage();

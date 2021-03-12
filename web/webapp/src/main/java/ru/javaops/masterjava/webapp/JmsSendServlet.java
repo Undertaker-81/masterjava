@@ -78,15 +78,18 @@ public class JmsSendServlet extends HttpServlet {
         objectMessage.setObjectProperty("subject",subject);
         objectMessage.setObjectProperty("body", body);
         objectMessage.setObjectProperty("users", users);
-        objectMessage.setObjectProperty("filename", attach.getSubmittedFileName());
-        //можно передать только примитивы, строки, листы, мапы из них, фигня конечно, но работает, потом найду "правильный" вариант
-        int b ;
-        List<Byte> bytes = new ArrayList<>();
-        InputStream inputStream = attach.getInputStream();
-        while (inputStream.available() > 0){
-            bytes.add((byte) inputStream.read());
+        if (attach != null){
+            objectMessage.setObjectProperty("filename", attach.getSubmittedFileName());
+            //можно передать только примитивы, строки, листы, мапы из них, фигня конечно, но работает, потом найду "правильный" вариант
+            int b ;
+            List<Byte> bytes = new ArrayList<>();
+            InputStream inputStream = attach.getInputStream();
+            while (inputStream.available() > 0){
+                bytes.add((byte) inputStream.read());
+            }
+            objectMessage.setObjectProperty("attach", bytes);
         }
-        objectMessage.setObjectProperty("attach", bytes);
+
 
    //     bytesMessage.setObjectProperty("attach", attach.getInputStream());
         producer.send(objectMessage);

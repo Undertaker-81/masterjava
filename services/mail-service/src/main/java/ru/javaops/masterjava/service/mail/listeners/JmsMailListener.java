@@ -47,13 +47,16 @@ public class JmsMailListener implements ServletContextListener {
                             String users = (String) objectMessage.getObjectProperty("users");
                             String filename = (String) objectMessage.getObjectProperty("filename");
 
-                            List<Byte> bytes = (List<Byte>) objectMessage.getObjectProperty("attach");
-                            byte[] b = new byte[bytes.size()];
-                            for (int i = 0;  i < bytes.size(); i++){
-                                b[i] = bytes.get(i);
+                            if (filename != null){
+                                List<Byte> bytes = (List<Byte>) objectMessage.getObjectProperty("attach");
+                                byte[] b = new byte[bytes.size()];
+                                for (int i = 0;  i < bytes.size(); i++){
+                                    b[i] = bytes.get(i);
+                                }
+                                InputStream inputStream = new ByteArrayInputStream(b);
+                                MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body, ImmutableList.of(Attachments.getAttachment(filename, inputStream )));
                             }
-                            InputStream inputStream = new ByteArrayInputStream(b);
-                            MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body, ImmutableList.of(Attachments.getAttachment(filename, inputStream )));
+                            MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body, Collections.emptyList());
                             log.info("Received TextMessage with text '{}'", body);
                         }
                     }
