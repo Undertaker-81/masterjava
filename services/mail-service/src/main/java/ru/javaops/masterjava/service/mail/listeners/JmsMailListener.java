@@ -55,8 +55,10 @@ public class JmsMailListener implements ServletContextListener {
                                 }
                                 InputStream inputStream = new ByteArrayInputStream(b);
                                 MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body, ImmutableList.of(Attachments.getAttachment(filename, inputStream )));
+                            }else {
+                                MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body, Collections.emptyList());
+
                             }
-                            MailServiceExecutor.sendBulk(MailWSClient.split(users), subject, body, Collections.emptyList());
                             log.info("Received TextMessage with text '{}'", body);
                         }
                     }

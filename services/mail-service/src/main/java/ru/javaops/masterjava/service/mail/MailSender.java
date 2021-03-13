@@ -1,26 +1,28 @@
 package ru.javaops.masterjava.service.mail;
-
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.typesafe.config.Config;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 import ru.javaops.masterjava.ExceptionType;
+import ru.javaops.masterjava.config.Configs;
 import ru.javaops.masterjava.persist.DBIProvider;
 import ru.javaops.masterjava.service.mail.persist.MailCase;
 import ru.javaops.masterjava.service.mail.persist.MailCaseDao;
 import ru.javaops.masterjava.web.WebStateException;
 
-import javax.mail.Multipart;
+import javax.mail.*;
 import javax.mail.internet.*;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.List;;
 import java.util.Set;
 
 @Slf4j
 public class MailSender {
     private static final MailCaseDao MAIL_CASE_DAO = DBIProvider.getDao(MailCaseDao.class);
+    private static Config conf = Configs.getConfig("mail.conf", "mail");
 
     static MailResult sendTo(Addressee to, String subject, String body, List<Attachment> attachments) throws WebStateException {
         val state = sendToGroup(ImmutableSet.of(to), ImmutableSet.of(), subject, body, attachments);
@@ -31,39 +33,44 @@ public class MailSender {
         log.info("Send mail to \'" + to + "\' cc \'" + cc + "\' subject \'" + subject + (log.isDebugEnabled() ? "\nbody=" + body : ""));
         String state = MailResult.OK;
         try {
-            val email = MailConfig.createHtmlEmail();
-            email.setSubject(subject);
-            email.setHtmlMsg(body);
+
+             val email = MailConfig.createHtmlEmail();
+
+            Message message = new MimeMessage(email.getMailSession());
+            message.setFrom(new InternetAddress(conf.getString("username")));
+            message.setSubject(subject);
             for (Addressee addressee : to) {
-                email.addTo(addressee.getEmail(), addressee.getName());
+                message.setRecipients(Message.RecipientType.TO,
+                        InternetAddress.parse(addressee.getEmail()));
             }
             for (Addressee addressee : cc) {
-                email.addCc(addressee.getEmail(), addressee.getName());
+                message.setRecipients(Message.RecipientType.CC,
+                        InternetAddress.parse(addressee.getEmail()));
             }
-           // email.buildMimeMessage();
-            MimeMessage mimeMessage = new MimeMessage(email.getMailSession());
+
+            // creates message part
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setContent(body, "text/html");
+
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+
+
             for (Attachment attach : attachments) {
-                InternetHeaders fileHeaders = new InternetHeaders();
-                fileHeaders.setHeader("Content-Transfer-Encoding", "8bit");
-                fileHeaders.setHeader("Content-Type", attach.getDataHandler().getContentType() + "; " + attach.getDataHandler().getName());
-                Multipart multipart = new MimeMultipart();
-                byte[] fileByteArray = IOUtils.toByteArray(attach.getDataHandler().getInputStream());
-//and convert to Base64
-                byte[] fileBase64ByteArray = java.util.Base64.getEncoder().encode(fileByteArray);
-                MimeBodyPart bodyPart = new MimeBodyPart(fileHeaders, fileBase64ByteArray);
-                bodyPart.setFileName(attach.getDataHandler().getName());
-                multipart.addBodyPart(bodyPart);
-                mimeMessage.setContent( multipart);
-
-
-              //  email.attach(attach.getDataHandler().getDataSource(), encodeWord(attach.getName()), null);
+                MimeBodyPart attachPart = new MimeBodyPart();
+                File file = File.createTempFile("attach","");
+                FileUtils.copyInputStreamToFile(attach.getDataHandler().getInputStream(), file);
+                attachPart.attachFile(file);
+            //   attachPart.setDataHandler(attach.getDataHandler());
+                attachPart.setFileName(attach.getName());
+                multipart.addBodyPart(attachPart);
             }
+            message.addHeader("List-Unsubscribe", "<mailto:masterjava@javaops.ru?subject=Unsubscribe&body=Unsubscribe>");
+            message.setContent(multipart);
+            Transport.send(message);
 
-            //  https://yandex.ru/blog/company/66296
-            email.setHeaders(ImmutableMap.of("List-Unsubscribe", "<mailto:masterjava@javaops.ru?subject=Unsubscribe&body=Unsubscribe>"));
-            email.buildMimeMessage();
-            email.sendMimeMessage();
-           // email.send();
+
+          //  email.send();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             state = e.getMessage();
