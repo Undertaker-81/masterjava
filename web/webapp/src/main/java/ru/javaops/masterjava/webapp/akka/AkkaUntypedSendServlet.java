@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.javaops.masterjava.service.mail.GroupResult;
 import ru.javaops.masterjava.service.mail.util.MailUtils.MailObject;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -14,29 +15,47 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static ru.javaops.masterjava.webapp.WebUtil.createMailObject;
 import static ru.javaops.masterjava.webapp.WebUtil.doAndWriteResponse;
 import static ru.javaops.masterjava.webapp.akka.AkkaWebappListener.akkaActivator;
 
-@WebServlet(value = "/sendAkkaUntyped", loadOnStartup = 1)
+@WebServlet(value = "/sendAkkaUntyped", loadOnStartup = 1, asyncSupported = true)
 @Slf4j
 @MultipartConfig
 public class AkkaUntypedSendServlet extends HttpServlet {
     private ActorRef webappActor;
     private ActorRef mailActor;
+    private ExecutorService executor = null;
+
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        executor = Executors.newFixedThreadPool(4);
         webappActor = akkaActivator.startActor(WebappActor.class, "mail-client");
         mailActor = akkaActivator.getActorRef("akka.tcp://MailService@127.0.0.1:2553/user/mail-actor");
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
-        doAndWriteResponse(resp, () -> sendAkka(createMailObject(req)));
+        AsyncContext ac = req.startAsync(); // obtain async context
+        ac.setTimeout(0); // test only, no timeout
+        executor.execute(() -> {
+            try {
+                doAndWriteResponse(resp, () -> sendAkka(createMailObject(req)));
+            } catch (IOException e) {
+               log.error(e.getMessage());
+            }
+            ac.complete();
+        });
+
+        executor.shutdown();
     }
 
     private String sendAkka(MailObject mailObject) {
